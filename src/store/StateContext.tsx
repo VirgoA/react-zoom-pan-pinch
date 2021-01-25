@@ -158,6 +158,21 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
         this.handleTouchStop,
         passiveOption,
       );
+      wrapperComponent.addEventListener(
+        "gesturestart",
+        this.handleGestureStart,
+        passiveOption,
+      );
+      wrapperComponent.addEventListener(
+        "gesturechange",
+        this.handleGesture,
+        passiveOption,
+      );
+      wrapperComponent.addEventListener(
+        "gestureend",
+        this.handleGestureStop,
+        passiveOption,
+      );
     }
 
     // set bound for animations
@@ -443,6 +458,40 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
   handleTouchStop = () => {
     this.handleStopPanning();
+    this.handlePinchStop();
+  };
+
+  //////////
+  // Gesture Events
+  //////////
+
+  handleGestureStart = event => {
+    const {
+      wrapperComponent,
+      contentComponent,
+      scale,
+      options: { disabled, minScale },
+    } = this.stateProvider;
+    event.preventDefault();
+
+    if (disabled || !wrapperComponent || !contentComponent || scale < minScale)
+      return;
+    handleDisableAnimation.call(this);
+    this.pinchStartScale = scale;
+    this.isDown = false;
+
+    handleCallback(this.props.onPinchingStart, this.getCallbackProps());
+  };
+
+  handleGesture = event => {
+    event.preventDefault();
+    const { pinch, options } = this.stateProvider;
+    if (options.disabled) return;
+    if (!pinch.disabled) return this.handlePinch(event);
+  };
+
+  handleGestureStop = event => {
+    event.preventDefault();
     this.handlePinchStop();
   };
 

@@ -81,11 +81,9 @@ export function handleZoomPinch(event) {
 
   const currentDistance = getCurrentDistance(event);
 
-  const newScale = calculatePinchZoom.call(
-    this,
-    currentDistance,
-    this.pinchStartDistance,
-  );
+  const newScale =
+    event.scale ||
+    calculatePinchZoom.call(this, currentDistance, this.pinchStartDistance);
   if (checkIfInfinite(newScale) || newScale === scale) return;
 
   // Get new element sizes to calculate bounds
