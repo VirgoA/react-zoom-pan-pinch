@@ -42,6 +42,9 @@ const wheelStopEventTime = 180;
 let wheelAnimationTimer = null;
 const wheelAnimationTime = 100;
 
+let wheelPanStopEventTimer = null;
+const wheelPanStopEventTime = 180;
+
 class StateProvider extends Component<StateContextProps, StateContextState> {
   public mounted = true;
 
@@ -79,6 +82,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   public throttle = false;
   // wheel helpers
   public previousWheelEvent = null;
+  public previousWheelPanEvent = null;
   public lastScale = null;
   // animations helpers
   public animate = null;
@@ -392,8 +396,29 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
     event.preventDefault();
     event.stopPropagation();
+
+    // Wheel pan start event
+    if (!wheelPanStopEventTimer) {
+      handleDisableAnimation.call(this);
+      handleCallback(this.props.onPanningStart, this.getCallbackProps());
+    }
+
+    // Wheel pan event
     handlePanningUsingWheel.call(this, event);
     handleCallback(this.props.onPanning, this.getCallbackProps());
+    this.previousWheelPanEvent = event;
+
+    // Wheel pan stop event
+    if (
+      handleWheelStop(this.previousWheelPanEvent, event, this.stateProvider)
+    ) {
+      clearTimeout(wheelPanStopEventTimer);
+      wheelPanStopEventTimer = setTimeout(() => {
+        if (!this.mounted) return;
+        handleCallback(this.props.onPanningStop, this.getCallbackProps());
+        wheelPanStopEventTimer = null;
+      }, wheelPanStopEventTime);
+    }
   };
 
   //////////
@@ -471,7 +496,9 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   // Gesture Events
   //////////
 
-  handleGestureStart = () => {
+  handleGestureStart = event => {
+    event.preventDefault();
+
     const {
       wrapperComponent,
       contentComponent,
@@ -491,10 +518,14 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   handleGesture = event => {
     const { pinch, options } = this.stateProvider;
     if (options.disabled) return;
-    if (!pinch.disabled) return this.handlePinch(event);
+    if (pinch.disabled) return;
+
+    event.preventDefault();
+    this.handlePinch(event);
   };
 
-  handleGestureStop = () => {
+  handleGestureStop = event => {
+    event.preventDefault();
     this.handlePinchStop();
   };
 
