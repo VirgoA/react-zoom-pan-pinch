@@ -2,6 +2,7 @@ import { PropsList } from "../interfaces/propsInterface";
 import { checkZoomBounds, handleCalculatePositions } from "../zoom/utils";
 import { handleCalculateBounds } from "../zoom";
 import { getDistance, roundNumber } from "../utils";
+import { wheelMousePosition } from "../zoom/utils";
 
 function round(number, decimal) {
   const roundNumber = Math.pow(10, decimal);
@@ -30,6 +31,26 @@ export function calculatePinchZoom(currentDistance, pinchStartDistance) {
   if (currentDistance < 0) return;
   const touchProportion = currentDistance / pinchStartDistance;
   const scaleDifference = touchProportion * this.pinchStartScale;
+
+  return checkZoomBounds(
+    roundNumber(scaleDifference, 2),
+    minScale,
+    maxScale,
+    size,
+    !disabled,
+  );
+}
+
+export function calculateGestureZoom(scale) {
+  const {
+    options: { minScale, maxScale },
+    scalePadding: { size, disabled },
+  }: PropsList = this.stateProvider;
+  if (typeof scale !== "number")
+    return console.error("Pinch gesture scale was not provided");
+
+  if (scale < 0) return;
+  const scaleDifference = scale * this.pinchStartScale;
 
   return checkZoomBounds(
     roundNumber(scaleDifference, 2),
@@ -70,28 +91,32 @@ export function handleZoomPinch(event) {
     event.stopPropagation();
   }
 
-  // if one finger starts from outside of wrapper
-  if (this.pinchStartDistance === null) return;
+  let mouseX, mouseY, newScale;
 
-  // Position transformation
-  const { mouseX, mouseY } = calculateMidpoint(event, scale, contentComponent);
+  if (event.scale) {
+    ({ mouseX, mouseY } = wheelMousePosition(event, contentComponent, scale));
+    newScale = calculateGestureZoom.call(this, event.scale);
+  } else {
+    // Position transformation
+    ({ mouseX, mouseY } = calculateMidpoint(event, scale, contentComponent));
+
+    const currentDistance = getCurrentDistance(event);
+
+    newScale = calculatePinchZoom.call(
+      this,
+      currentDistance,
+      this.pinchStartDistance,
+    );
+
+    this.lastDistance = currentDistance;
+  }
 
   // if touches goes off of the wrapper element
   if (checkIfInfinite(mouseX) || checkIfInfinite(mouseY)) return;
-
-  const currentDistance = getCurrentDistance(event);
-
-  const newScale =
-    event.scale ||
-    calculatePinchZoom.call(this, currentDistance, this.pinchStartDistance);
   if (checkIfInfinite(newScale) || newScale === scale) return;
 
   // Get new element sizes to calculate bounds
-  const bounds = handleCalculateBounds.call(
-    this,
-    newScale,
-    limitToWrapper,
-  );
+  const bounds = handleCalculateBounds.call(this, newScale, limitToWrapper);
 
   // Calculate transformations
   const isLimitedToBounds =
@@ -105,8 +130,6 @@ export function handleZoomPinch(event) {
     bounds,
     isLimitedToBounds,
   );
-
-  this.lastDistance = currentDistance;
 
   this.stateProvider.positionX = x;
   this.stateProvider.positionY = y;
