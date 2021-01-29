@@ -18,7 +18,11 @@ import {
 } from "./zoom";
 import { handleDisableAnimation, animateComponent } from "./animations";
 import { handleZoomPinch } from "./pinch";
-import { handlePanning, handlePanningAnimation, handlePanningUsingWheel } from "./pan";
+import {
+  handlePanning,
+  handlePanningAnimation,
+  handlePanningUsingWheel,
+} from "./pan";
 import {
   handleFireVelocity,
   animateVelocity,
@@ -371,7 +375,9 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
   handleWheelPanning = event => {
     const {
-      pan: { disabled, wheelEnabled }, wrapperComponent, contentComponent
+      pan: { disabled, wheelEnabled },
+      wrapperComponent,
+      contentComponent,
     } = this.stateProvider;
 
     if (
@@ -387,7 +393,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
     event.preventDefault();
     event.stopPropagation();
     handlePanningUsingWheel.call(this, event);
-    handleCallback(this.props.onPanning, this.getCallbackProps())
+    handleCallback(this.props.onPanning, this.getCallbackProps());
   };
 
   //////////
@@ -465,14 +471,13 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   // Gesture Events
   //////////
 
-  handleGestureStart = event => {
+  handleGestureStart = () => {
     const {
       wrapperComponent,
       contentComponent,
       scale,
       options: { disabled, minScale },
     } = this.stateProvider;
-    event.preventDefault();
 
     if (disabled || !wrapperComponent || !contentComponent || scale < minScale)
       return;
@@ -484,14 +489,12 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleGesture = event => {
-    event.preventDefault();
     const { pinch, options } = this.stateProvider;
     if (options.disabled) return;
     if (!pinch.disabled) return this.handlePinch(event);
   };
 
-  handleGestureStop = event => {
-    event.preventDefault();
+  handleGestureStop = () => {
     this.handlePinchStop();
   };
 
