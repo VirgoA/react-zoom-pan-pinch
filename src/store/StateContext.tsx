@@ -18,7 +18,11 @@ import {
 } from "./zoom";
 import { handleDisableAnimation, animateComponent } from "./animations";
 import { handleZoomPinch } from "./pinch";
-import { handlePanning, handlePanningAnimation, handlePanningUsingWheel } from "./pan";
+import {
+  handlePanning,
+  handlePanningAnimation,
+  handlePanningUsingWheel,
+} from "./pan";
 import {
   handleFireVelocity,
   animateVelocity,
@@ -37,6 +41,9 @@ let wheelStopEventTimer = null;
 const wheelStopEventTime = 180;
 let wheelAnimationTimer = null;
 const wheelAnimationTime = 100;
+
+let wheelPanStopEventTimer = null;
+const wheelPanStopEventTime = 180;
 
 class StateProvider extends Component<StateContextProps, StateContextState> {
   public mounted = true;
@@ -75,6 +82,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   public throttle = false;
   // wheel helpers
   public previousWheelEvent = null;
+  public previousWheelPanEvent = null;
   public lastScale = null;
   // animations helpers
   public animate = null;
@@ -356,7 +364,9 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
   handleWheelPanning = event => {
     const {
-      pan: { disabled, wheelEnabled }, wrapperComponent, contentComponent
+      pan: { disabled, wheelEnabled },
+      wrapperComponent,
+      contentComponent,
     } = this.stateProvider;
 
     if (
@@ -371,8 +381,29 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
     event.preventDefault();
     event.stopPropagation();
+
+    // Wheel pan start event
+    if (!wheelPanStopEventTimer) {
+      handleDisableAnimation.call(this);
+      handleCallback(this.props.onPanningStart, this.getCallbackProps());
+    }
+
+    // Wheel pan event
     handlePanningUsingWheel.call(this, event);
-    handleCallback(this.props.onPanning, this.getCallbackProps())
+    handleCallback(this.props.onPanning, this.getCallbackProps());
+    this.previousWheelPanEvent = event;
+
+    // Wheel pan stop event
+    if (
+      handleWheelStop(this.previousWheelPanEvent, event, this.stateProvider)
+    ) {
+      clearTimeout(wheelPanStopEventTimer);
+      wheelPanStopEventTimer = setTimeout(() => {
+        if (!this.mounted) return;
+        handleCallback(this.props.onPanningStop, this.getCallbackProps());
+        wheelPanStopEventTimer = null;
+      }, wheelPanStopEventTime);
+    }
   };
 
   //////////
