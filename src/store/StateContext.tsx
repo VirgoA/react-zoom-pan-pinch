@@ -463,6 +463,12 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   //////////
 
   handleTouchStart = event => {
+    console.log(
+      "handleTouchStart - touch event! with : ",
+      event.touches.length,
+      "fingers!",
+    );
+
     const {
       wrapperComponent,
       contentComponent,
@@ -479,7 +485,11 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleTouch = event => {
-    console.log("touch event! with : ", event.touches.length, "fingers!");
+    console.log(
+      "handletouch - touch event! with : ",
+      event.touches.length,
+      "fingers!",
+    );
     const { pan, pinch, options } = this.stateProvider;
     if (options.disabled) return;
     if (!pan.disabled && event.touches.length === 1)
