@@ -211,11 +211,19 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   //////////
 
   handleWheel = event => {
+    console.log("mouse wheel event detected!!");
     const {
       scale,
       wheel: { disabled, wheelEnabled, touchPadEnabled },
     } = this.stateProvider;
+    console.log(
+      "the props for the wheel action:",
+      disabled,
+      wheelEnabled,
+      touchPadEnabled,
+    );
 
+    console.log("is ctrl key activated??:", event.ctrlKey);
     const { onWheelStart, onWheel, onWheelStop } = this.props;
     const { wrapperComponent, contentComponent } = this.state;
 
