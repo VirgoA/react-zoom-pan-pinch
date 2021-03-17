@@ -280,6 +280,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   //////////
 
   checkPanningTarget = event => {
+    console.log("checkPanningTarget");
     const {
       pan: { disableOnTarget },
     } = this.stateProvider;
@@ -295,6 +296,8 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   checkIsPanningActive = event => {
+    console.log("checkIsPanningActive");
+
     const {
       pan: { disabled },
     } = this.stateProvider;
@@ -314,6 +317,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleSetUpPanning = (x, y) => {
+    console.log("handleSetUpPanning");
     const { positionX, positionY } = this.stateProvider;
     this.isDown = true;
     this.startCoords = { x: x - positionX, y: y - positionY };
@@ -322,6 +326,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleStartPanning = event => {
+    console.log("handle panning start event");
     const {
       wrapperComponent,
       scale,
@@ -354,6 +359,11 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handlePanning = event => {
+    console.log(
+      "handlePanning event fired! with:",
+      event.touches.length,
+      "fingers!!!",
+    );
     if (this.isDown) event.preventDefault();
     if (this.checkIsPanningActive(event)) return;
     event.stopPropagation();
@@ -363,6 +373,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleStopPanning = () => {
+    console.log("handlestoppanning event fired");
     if (this.isDown) {
       this.isDown = false;
       this.animate = false;
@@ -386,6 +397,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleWheelPanning = event => {
+    console.log("handlewheelpanning event");
     const {
       pan: { disabled, wheelEnabled },
       wrapperComponent,
