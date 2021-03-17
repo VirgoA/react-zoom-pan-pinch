@@ -498,7 +498,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
   handleGestureStart = event => {
     event.preventDefault();
-
+    console.log("hey, its a gesture event being started");
     const {
       wrapperComponent,
       contentComponent,
@@ -525,6 +525,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleGestureStop = event => {
+    console.log("hey, its a gesture event being ended");
     event.preventDefault();
     this.handlePinchStop();
   };
