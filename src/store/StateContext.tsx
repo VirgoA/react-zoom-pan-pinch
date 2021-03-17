@@ -367,6 +367,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
     );
     if (this.isDown) event.preventDefault();
     if (this.checkIsPanningActive(event)) return;
+    console.log("is panning active?");
     event.stopPropagation();
     calculateVelocityStart.call(this, event);
     handlePanning.call(this, event);
@@ -398,7 +399,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleWheelPanning = event => {
-    console.log("handlewheelpanning event");
+    console.log("handlewheelpanning event", event);
     const {
       pan: { disabled, wheelEnabled },
       wrapperComponent,
