@@ -240,22 +240,15 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
     }
 
     if (window.navigator.appVersion.indexOf("Mac") !== -1 && !event.ctrlKey) {
-      console.log("panning for mac - testing");
-      handleCallback(onWheel, this.getCallbackProps());
+      //console.log("panning for mac - testing");
+      //handleCallback(onWheel, this.getCallbackProps());
       this.handleSetUpPanning(event.clientX, event.clientY);
       calculateVelocityStart.call(this, event);
       handlePanningUsingWheel.call(this, event);
-      handleCallback(this.props.onPanning, this.getCallbackProps());
-      this.previousWheelEvent = event;
-      if (handleWheelStop(this.previousWheelEvent, event, this.stateProvider)) {
-        clearTimeout(wheelStopEventTimer);
-        wheelStopEventTimer = setTimeout(() => {
-          if (!this.mounted) return;
-          handleCallback(onWheelStop, this.getCallbackProps());
-          wheelStopEventTimer = null;
-          this.handleStopPanning();
-        }, wheelStopEventTime);
-      }
+      //handleCallback(this.props.onPanning, this.getCallbackProps());
+
+      this.handleStopPanning();
+
       return;
       //right here
     }
