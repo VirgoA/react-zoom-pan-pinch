@@ -137,6 +137,11 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       // Zooming events on wrapper
       const passiveOption = makePassiveEventOption(false);
       wrapperComponent.addEventListener(
+        "scroll",
+        this.scrollWheel,
+        passiveOption,
+      );
+      wrapperComponent.addEventListener(
         "wheel",
         this.handleWheel,
         passiveOption,
@@ -209,6 +214,10 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   //////////
   // Wheel
   //////////
+  scrollWheel = event => {
+    console.log("scroll event fired!!!!!");
+    console.log(event);
+  };
 
   handleWheel = event => {
     console.log("mouse wheel event detected!!");
