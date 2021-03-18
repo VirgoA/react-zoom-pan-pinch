@@ -136,11 +136,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
       // Zooming events on wrapper
       const passiveOption = makePassiveEventOption(false);
-      wrapperComponent.addEventListener(
-        "scroll",
-        this.scrollWheel,
-        passiveOption,
-      );
+
       wrapperComponent.addEventListener(
         "wheel",
         this.handleWheel,
@@ -262,7 +258,16 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       calculateVelocityStart.call(this, event);
       handlePanningUsingWheel.call(this, event);
       handleCallback(this.props.onPanning, this.getCallbackProps());
-      this.handleStopPanning();
+      this.previousWheelEvent = event;
+      if (handleWheelStop(this.previousWheelEvent, event, this.stateProvider)) {
+        clearTimeout(wheelStopEventTimer);
+        wheelStopEventTimer = setTimeout(() => {
+          if (!this.mounted) return;
+          handleCallback(onWheelStop, this.getCallbackProps());
+          wheelStopEventTimer = null;
+        }, wheelStopEventTime);
+        this.handleStopPanning();
+      }
       return;
       //right here
     }
