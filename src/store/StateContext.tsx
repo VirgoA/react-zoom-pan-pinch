@@ -320,7 +320,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleSetUpPanning = (x, y) => {
-    console.log("handleSetUpPanning");
     const { positionX, positionY } = this.stateProvider;
     this.isDown = true;
     this.startCoords = { x: x - positionX, y: y - positionY };
@@ -329,7 +328,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleStartPanning = event => {
-    console.log("handle panning start event");
     const {
       wrapperComponent,
       scale,
@@ -371,7 +369,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleStopPanning = () => {
-    console.log("handlestoppanning event fired");
     if (this.isDown) {
       this.isDown = false;
       this.animate = false;
