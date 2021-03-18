@@ -254,6 +254,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       handlePanningUsingWheel.call(this, event);
       handleCallback(this.props.onPanning, this.getCallbackProps());
       this.handleStopPanning();
+      return;
       //right here
     }
 
