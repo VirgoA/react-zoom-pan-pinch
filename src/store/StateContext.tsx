@@ -147,11 +147,11 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
         this.handleWheelPanning,
         passiveOption,
       );
-      wrapperComponent.addEventListener(
-        "dblclick",
-        this.handleDbClick,
-        passiveOption,
-      );
+      // wrapperComponent.addEventListener(
+      //   "dblclick",
+      //   this.handleDbClick,
+      //   passiveOption,
+      // );
       wrapperComponent.addEventListener(
         "touchstart",
         this.handleTouchStart,
@@ -210,25 +210,12 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   //////////
   // Wheel
   //////////
-  scrollWheel = event => {
-    console.log("scroll event fired!!!!!");
-    console.log(event);
-  };
-
   handleWheel = event => {
-    console.log("mouse wheel event detected!!");
     const {
       scale,
       wheel: { disabled, wheelEnabled, touchPadEnabled },
     } = this.stateProvider;
-    console.log(
-      "the props for the wheel action:",
-      disabled,
-      wheelEnabled,
-      touchPadEnabled,
-    );
 
-    console.log("is ctrl key activated??:", event.ctrlKey);
     const { onWheelStart, onWheel, onWheelStop } = this.props;
     const { wrapperComponent, contentComponent } = this.state;
 
@@ -254,6 +241,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
     if (window.navigator.appVersion.indexOf("Mac") !== -1 && !event.ctrlKey) {
       console.log("panning for mac - testing");
+      handleCallback(onWheel, this.getCallbackProps());
       this.handleSetUpPanning(event.clientX, event.clientY);
       calculateVelocityStart.call(this, event);
       handlePanningUsingWheel.call(this, event);
@@ -265,8 +253,8 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
           if (!this.mounted) return;
           handleCallback(onWheelStop, this.getCallbackProps());
           wheelStopEventTimer = null;
+          this.handleStopPanning();
         }, wheelStopEventTime);
-        this.handleStopPanning();
       }
       return;
       //right here
@@ -305,7 +293,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   //////////
 
   checkPanningTarget = event => {
-    console.log("checkPanningTarget");
     const {
       pan: { disableOnTarget },
     } = this.stateProvider;
@@ -321,8 +308,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   checkIsPanningActive = event => {
-    console.log("checkIsPanningActive");
-
     const {
       pan: { disabled },
     } = this.stateProvider;
@@ -384,15 +369,8 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handlePanning = event => {
-    console.log(
-      "handlePanning event fired! with:",
-      //event.touches.length,
-      event,
-      "fingers!!!",
-    );
     if (this.isDown) event.preventDefault();
     if (this.checkIsPanningActive(event)) return;
-    console.log("is panning active?");
     event.stopPropagation();
     calculateVelocityStart.call(this, event);
     handlePanning.call(this, event);
@@ -424,7 +402,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleWheelPanning = event => {
-    console.log("handlewheelpanning event", event);
     const {
       pan: { disabled, wheelEnabled },
       wrapperComponent,
@@ -533,7 +510,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleTouch = event => {
-    console.log("handletouch - touch event! with : ", event, "fingers!");
     const { pan, pinch, options } = this.stateProvider;
     if (options.disabled) return;
     if (!pan.disabled && event.touches.length === 1)
@@ -553,7 +529,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
   handleGestureStart = event => {
     event.preventDefault();
-    console.log("hey, its a gesture event being started");
     const {
       wrapperComponent,
       contentComponent,
@@ -571,7 +546,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleGesture = event => {
-    console.log("hey, its a gesture event being handled");
     const { pinch, options } = this.stateProvider;
     if (options.disabled) return;
     if (pinch.disabled) return;
@@ -581,7 +555,6 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   };
 
   handleGestureStop = event => {
-    console.log("hey, its a gesture event being ended");
     event.preventDefault();
     this.handlePinchStop();
   };
