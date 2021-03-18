@@ -248,10 +248,13 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
     }
 
     if (window.navigator.appVersion.indexOf("Mac") !== -1 && !event.ctrlKey) {
-      this.handleSetUpPanning(event.clientX, event.clientY);
-      calculateVelocityStart.call(this, event);
-      handlePanning.call(this, event);
-      handleCallback(this.props.onPanning, this.getCallbackProps());
+      console.log("panning for mac - testing");
+      // this.handleSetUpPanning(event.clientX, event.clientY);
+      // calculateVelocityStart.call(this, event);
+      // handlePanningUsingWheel.call(this, event);
+      // handleCallback(this.props.onPanning, this.getCallbackProps());
+      // this.handleStopPanning();
+      this.handleWheelPanning(makePassiveEventOption(false));
       //right here
     }
 
