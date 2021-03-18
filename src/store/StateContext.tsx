@@ -247,6 +247,14 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       handleCallback(onWheelStart, this.getCallbackProps());
     }
 
+    if (window.navigator.appVersion.indexOf("Mac") !== -1 && !event.ctrlKey) {
+      this.handleSetUpPanning(event.clientX, event.clientY);
+      calculateVelocityStart.call(this, event);
+      handlePanning.call(this, event);
+      handleCallback(this.props.onPanning, this.getCallbackProps());
+      //right here
+    }
+
     // Wheel event
     handleWheelZoom.call(this, event);
     handleCallback(onWheel, this.getCallbackProps());
