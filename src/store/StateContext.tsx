@@ -137,6 +137,13 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       // Zooming events on wrapper
       const passiveOption = makePassiveEventOption(false);
 
+      // if (window.navigator.appVersion.indexOf("Mac") !== -1) {
+      //   wrapperComponent.addEventListener(
+      //     "wheel",
+      //     this.handleScroll,
+      //     passiveOption,
+      //   );
+      // }
       wrapperComponent.addEventListener(
         "wheel",
         this.handleWheel,
@@ -147,6 +154,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
         this.handleWheelPanning,
         passiveOption,
       );
+
       // wrapperComponent.addEventListener(
       //   "dblclick",
       //   this.handleDbClick,
@@ -208,6 +216,42 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   }
 
   //////////
+  // scroll
+  //////////
+  handleScroll = event => {
+    const {
+      wheel: { disabled, wheelEnabled, touchPadEnabled },
+    } = this.stateProvider;
+
+    const { wrapperComponent, contentComponent } = this.state;
+
+    if (
+      this.isDown ||
+      disabled ||
+      this.stateProvider.options.disabled ||
+      !wrapperComponent ||
+      !contentComponent
+    )
+      return;
+
+    // ctrlKey detects if touchpad execute wheel or pinch gesture
+    if (!wheelEnabled && !event.ctrlKey) return;
+    if (!touchPadEnabled && event.ctrlKey) return;
+
+    //console.log("panning for mac - testing");
+    //handleCallback(onWheel, this.getCallbackProps());
+    this.handleSetUpPanning(event.clientX, event.clientY);
+    calculateVelocityStart.call(this, event);
+    handlePanningUsingWheel.call(this, event);
+    //handleCallback(this.props.onPanning, this.getCallbackProps());
+
+    this.handleStopPanning();
+
+    return;
+    //right here
+  };
+
+  //////////
   // Wheel
   //////////
   handleWheel = event => {
@@ -239,19 +283,19 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       handleCallback(onWheelStart, this.getCallbackProps());
     }
 
-    if (window.navigator.appVersion.indexOf("Mac") !== -1 && !event.ctrlKey) {
-      //console.log("panning for mac - testing");
-      //handleCallback(onWheel, this.getCallbackProps());
-      this.handleSetUpPanning(event.clientX, event.clientY);
-      calculateVelocityStart.call(this, event);
-      handlePanningUsingWheel.call(this, event);
-      //handleCallback(this.props.onPanning, this.getCallbackProps());
+    // if (window.navigator.appVersion.indexOf("Mac") !== -1 && !event.ctrlKey) {
+    //   //console.log("panning for mac - testing");
+    //   //handleCallback(onWheel, this.getCallbackProps());
+    //   this.handleSetUpPanning(event.clientX, event.clientY);
+    //   calculateVelocityStart.call(this, event);
+    //   handlePanningUsingWheel.call(this, event);
+    //   //handleCallback(this.props.onPanning, this.getCallbackProps());
 
-      this.handleStopPanning();
+    //   this.handleStopPanning();
 
-      return;
-      //right here
-    }
+    //   return;
+    //   //right here
+    // }
 
     // Wheel event
     handleWheelZoom.call(this, event);
@@ -398,6 +442,22 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       contentComponent,
     } = this.stateProvider;
 
+    console.log(
+      this.isDown ||
+        disabled ||
+        this.stateProvider.options.disabled ||
+        !wrapperComponent ||
+        !contentComponent ||
+        !wheelEnabled,
+    );
+    console.log(
+      this.isDown,
+      disabled,
+      this.stateProvider.options.disabled,
+      !wrapperComponent,
+      !contentComponent,
+      !wheelEnabled,
+    );
     if (
       this.isDown ||
       disabled ||
