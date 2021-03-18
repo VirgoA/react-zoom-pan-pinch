@@ -137,21 +137,16 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       // Zooming events on wrapper
       const passiveOption = makePassiveEventOption(false);
 
-      // if (window.navigator.appVersion.indexOf("Mac") !== -1) {
-      //   wrapperComponent.addEventListener(
-      //     "wheel",
-      //     this.handleScroll,
-      //     passiveOption,
-      //   );
-      // }
+      if (window.navigator.appVersion.indexOf("Mac") !== -1) {
+        wrapperComponent.addEventListener(
+          "wheel",
+          this.handleScroll,
+          passiveOption,
+        );
+      }
       wrapperComponent.addEventListener(
         "wheel",
         this.handleWheel,
-        passiveOption,
-      );
-      wrapperComponent.addEventListener(
-        "wheel",
-        this.handleWheelPanning,
         passiveOption,
       );
 
@@ -234,6 +229,8 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
     )
       return;
 
+    if (event.ctrlKey) return;
+
     // ctrlKey detects if touchpad execute wheel or pinch gesture
     if (!wheelEnabled && !event.ctrlKey) return;
     if (!touchPadEnabled && event.ctrlKey) return;
@@ -271,6 +268,8 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       !contentComponent
     )
       return;
+
+    if (!event.ctrlKey) return;
 
     // ctrlKey detects if touchpad execute wheel or pinch gesture
     if (!wheelEnabled && !event.ctrlKey) return;
