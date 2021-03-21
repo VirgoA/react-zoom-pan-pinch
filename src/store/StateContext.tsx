@@ -236,7 +236,19 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
     if (!wheelEnabled && !event.ctrlKey) return;
     if (!touchPadEnabled && event.ctrlKey) return;
 
-    handleDisableAnimation.call(this);
+    let prevent_left;
+
+    // If none of the parents can be scrolled left when we try to scroll left
+    prevent_left =
+      event.deltaX < 0 &&
+      event.target.parents().filter(function() {
+        return this.scrollLeft() > 0;
+      }).length === 0;
+
+    // Prevent futile scroll, which would trigger the Back/Next page event
+    if (prevent_left) {
+      event.preventDefault();
+    }
 
     //console.log("panning for mac - testing");
     //handleCallback(onWheel, this.getCallbackProps());
