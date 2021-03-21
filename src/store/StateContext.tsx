@@ -136,21 +136,33 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
 
       // Zooming events on wrapper
       const passiveOption = makePassiveEventOption(false);
+
+      if (window.navigator.appVersion.indexOf("Mac") !== -1) {
+        wrapperComponent.addEventListener(
+          "wheel",
+          this.handleScroll,
+          passiveOption,
+        );
+      }
+
       wrapperComponent.addEventListener(
         "wheel",
         this.handleWheel,
         passiveOption,
       );
-      wrapperComponent.addEventListener(
-        "wheel",
-        this.handleWheelPanning,
-        passiveOption,
-      );
-      wrapperComponent.addEventListener(
-        "dblclick",
-        this.handleDbClick,
-        passiveOption,
-      );
+
+      // wrapperComponent.addEventListener(
+      //   "wheel",
+      //   this.handleWheelPanning,
+      //   passiveOption,
+      // );
+
+      // wrapperComponent.addEventListener(
+      //   "dblclick",
+      //   this.handleDbClick,
+      //   passiveOption,
+      // );
+
       wrapperComponent.addEventListener(
         "touchstart",
         this.handleTouchStart,
@@ -207,6 +219,41 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
   }
 
   //////////
+  // scroll
+  //////////
+  handleScroll = event => {
+    event.preventDefault();
+    const {
+      wheel: { disabled, wheelEnabled, touchPadEnabled },
+    } = this.stateProvider;
+
+    const { wrapperComponent, contentComponent } = this.state;
+
+    if (
+      this.isDown ||
+      disabled ||
+      this.stateProvider.options.disabled ||
+      !wrapperComponent ||
+      !contentComponent
+    )
+      return;
+
+    if (event.ctrlKey) return;
+
+    // ctrlKey detects if touchpad execute wheel or pinch gesture
+    if (!wheelEnabled && !event.ctrlKey) return;
+    if (!touchPadEnabled && event.ctrlKey) return;
+
+    this.handleSetUpPanning(event.clientX, event.clientY);
+    calculateVelocityStart.call(this, event);
+    handlePanningUsingWheel.call(this, event);
+
+    this.handleStopPanning();
+
+    return;
+  };
+
+  //////////
   // Wheel
   //////////
 
@@ -227,6 +274,8 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       !contentComponent
     )
       return;
+
+    if (!event.ctrlKey) return;
 
     // ctrlKey detects if touchpad execute wheel or pinch gesture
     if (!wheelEnabled && !event.ctrlKey) return;
