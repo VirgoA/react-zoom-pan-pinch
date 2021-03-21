@@ -155,6 +155,7 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
       //   this.handleDbClick,
       //   passiveOption,
       // );
+
       wrapperComponent.addEventListener(
         "touchstart",
         this.handleTouchStart,
@@ -234,6 +235,8 @@ class StateProvider extends Component<StateContextProps, StateContextState> {
     // ctrlKey detects if touchpad execute wheel or pinch gesture
     if (!wheelEnabled && !event.ctrlKey) return;
     if (!touchPadEnabled && event.ctrlKey) return;
+
+    handleDisableAnimation.call(this);
 
     //console.log("panning for mac - testing");
     //handleCallback(onWheel, this.getCallbackProps());
