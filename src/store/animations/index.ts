@@ -32,7 +32,9 @@ export function animate(animationName, animationTime, callback) {
       this.animation = null;
     } else {
       callback(step);
-      requestAnimationFrame(this.animation);
+      if (this && this.animation) {
+        requestAnimationFrame(this.animation);
+      }
     }
   };
 
