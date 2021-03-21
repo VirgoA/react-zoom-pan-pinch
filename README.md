@@ -1,4 +1,7 @@
-# react-zoom-pan-pinch
+# react-zoom-pan-pinch-scroll
+
+This is an improved version of the react-zoom-pan-pinch library with an improved scrolling behaviour for Mac Os.
+This version enables a much better user experience for your app's mac users.
 
 [![NPM](https://img.shields.io/npm/v/react-zoom-pan-pinch.svg)](https://www.npmjs.com/package/react-zoom-pan-pinch)
 ![npm bundle size](https://img.shields.io/bundlephobia/minzip/react-zoom-pan-pinch)
